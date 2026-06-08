@@ -114,11 +114,11 @@ public class IssuesController : ControllerBase
     }
 
     [HttpPost("{id}/comments")]
-    public async Task<ActionResult<CommentDto>> AddComment(Guid id, AddCommentCommand command)
+    public async Task<ActionResult<CommentDto>> AddComment(Guid projectId, Guid id, AddCommentCommand command)
     {
         if (_currentUser.UserId is null) return Unauthorized();
         var cmd = command with { IssueId = id, UserId = _currentUser.UserId.Value };
         var result = await _mediator.Send(cmd);
-        return CreatedAtAction(nameof(GetById), new { projectId = "", id }, result);
+        return CreatedAtAction(nameof(GetById), new { projectId, id }, result);
     }
 }

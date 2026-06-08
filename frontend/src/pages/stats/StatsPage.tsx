@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useProject } from '@/hooks/useProject'
 import api from '@/lib/api'
-import { BarChart3, Bug, CheckCircle, Clock, Users, ListTodo, Timer, Shield, TrendingUp, Target } from 'lucide-react'
+import { BarChart3, Bug, CheckCircle, Clock, Users, ListTodo, Timer, Shield, TrendingUp, Target, Trophy, User, UsersIcon } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts'
+
+interface LeaderboardEntry {
+  id: string
+  name: string
+  totalStoryPoints: number
+  completedIssues: number
+}
 
 interface ProjectStats {
   totalIssues: number
@@ -12,6 +19,8 @@ interface ProjectStats {
   byStatus: { status: string; count: number }[]
   byType: { type: string; count: number }[]
   byPriority: { priority: string; count: number }[]
+  memberLeaderboard: LeaderboardEntry[]
+  teamLeaderboard: LeaderboardEntry[]
 }
 
 const statusColors: Record<string, string> = {
@@ -190,6 +199,73 @@ export function StatsPage() {
             </ResponsiveContainer>
           ) : (
             <div className="flex items-center justify-center h-[220px] text-gray-600 text-sm">No data</div>
+          )}
+        </div>
+      </div>
+
+      {/* Leaderboards */}
+      <div className="grid grid-cols-2 gap-4">
+        {/* Members Leaderboard */}
+        <div className="bg-surface-1 border border-surface-3 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+            <User className="h-4 w-4 text-amber-500" />
+            <Trophy className="h-4 w-4 text-amber-500" />
+            Top Members by Story Points
+          </h3>
+          {stats?.memberLeaderboard && stats.memberLeaderboard.length > 0 ? (
+            <div className="space-y-1">
+              {stats.memberLeaderboard.map((entry, idx) => (
+                <div key={entry.id} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-2 transition-colors">
+                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                    idx === 0 ? 'bg-yellow-500/20 text-yellow-400' :
+                    idx === 1 ? 'bg-gray-400/20 text-gray-300' :
+                    idx === 2 ? 'bg-amber-700/20 text-amber-500' :
+                    'bg-surface-3 text-gray-500'
+                  }`}>
+                    {idx + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white truncate font-medium">{entry.name}</p>
+                    <p className="text-[10px] text-gray-500">{entry.completedIssues} issues completed</p>
+                  </div>
+                  <span className="text-sm font-semibold text-misil-400 shrink-0">{entry.totalStoryPoints} pts</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-[200px] text-gray-600 text-sm">No completed issues with story points</div>
+          )}
+        </div>
+
+        {/* Teams Leaderboard */}
+        <div className="bg-surface-1 border border-surface-3 rounded-lg p-4">
+          <h3 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+            <UsersIcon className="h-4 w-4 text-purple-400" />
+            <Trophy className="h-4 w-4 text-amber-500" />
+            Top Teams by Story Points
+          </h3>
+          {stats?.teamLeaderboard && stats.teamLeaderboard.length > 0 ? (
+            <div className="space-y-1">
+              {stats.teamLeaderboard.map((entry, idx) => (
+                <div key={entry.id} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-surface-2 transition-colors">
+                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                    idx === 0 ? 'bg-yellow-500/20 text-yellow-400' :
+                    idx === 1 ? 'bg-gray-400/20 text-gray-300' :
+                    idx === 2 ? 'bg-amber-700/20 text-amber-500' :
+                    'bg-surface-3 text-gray-500'
+                  }`}>
+                    {idx + 1}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white truncate font-medium">{entry.name}</p>
+                    <p className="text-[10px] text-gray-500">{entry.completedIssues} issues completed</p>
+                  </div>
+                  <span className="text-sm font-semibold text-misil-400 shrink-0">{entry.totalStoryPoints} pts</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-[200px] text-gray-600 text-sm">No teams with completed issues</div>
           )}
         </div>
       </div>

@@ -132,6 +132,45 @@ export function BoardPage() {
     }
   }
 
+  const renderIssueCard = (issue: IssueDto) => (
+    <div
+      key={issue.id}
+      draggable
+      onDragStart={() => handleDragStart(issue)}
+      onClick={() => handleCardClick(issue)}
+      className="bg-surface-2 rounded-md p-3 border border-surface-4 cursor-grab active:cursor-grabbing hover:border-misil-600/50 transition-all group"
+    >
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex items-center gap-1.5">
+          <span className="text-xs">{typeIcons[issue.issueType] ?? '📋'}</span>
+          <GripVertical className="h-3 w-3 text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className={`text-[10px] font-medium ${priorityColors[issue.priority] ?? ''}`}>{issue.priority}</span>
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0">{issue.issueType}</Badge>
+        </div>
+      </div>
+      <p className="text-sm text-white font-medium leading-snug">{issue.title}</p>
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-[10px] text-gray-500">
+          {issue.assigneeTeamId ? (
+            <><Users className="h-3 w-3 inline" /> {teamMap[issue.assigneeTeamId] || '...'}</>
+          ) : issue.assigneeId ? (
+            <>👤 {memberMap[issue.assigneeId] || '...'}</>
+          ) : 'unassigned'}
+        </span>
+        {can('create_issues') && (
+          <button
+            onClick={(e) => handleDelete(issue, e)}
+            className="p-1 rounded text-gray-600 hover:text-red-400 hover:bg-surface-3 opacity-0 group-hover:opacity-100 transition-all"
+          >
+            <Trash2 className="h-3 w-3" />
+          </button>
+        )}
+      </div>
+    </div>
+  )
+
   const handleCardClick = (issue: IssueDto) => {
     setSelectedIssueId(issue.id)
   }
@@ -154,6 +193,17 @@ export function BoardPage() {
       <div className="flex-1 flex gap-4 overflow-x-auto pb-4">
         {columns.map((col) => {
           const colIssues = filtered.filter((i) => i.status === col.key)
+          const teams: Record<string, IssueDto[]> = {}
+          const unassigned: IssueDto[] = []
+          for (const issue of colIssues) {
+            if (issue.assigneeTeamId) {
+              if (!teams[issue.assigneeTeamId]) teams[issue.assigneeTeamId] = []
+              teams[issue.assigneeTeamId].push(issue)
+            } else {
+              unassigned.push(issue)
+            }
+          }
+          const teamIds = Object.keys(teams).sort()
           return (
             <div
               key={col.key}
@@ -161,7 +211,7 @@ export function BoardPage() {
               onDrop={() => handleDrop(col.key)}
               className={`flex-1 min-w-[280px] bg-surface-1 rounded-lg border transition-colors flex flex-col ${dragIssue.current ? 'border-misil-500/50' : 'border-surface-3'}`}
             >
-              <div className="p-3 border-b border-surface-3 flex items-center justify-between">
+              <div className="p-3 border-b border-surface-3 flex items-center justify-between shrink-0">
                 <h3 className="font-medium text-sm text-white">{col.label}</h3>
                 <Badge variant="outline" className={statusColors[col.key]}>{colIssues.length}</Badge>
               </div>
@@ -169,40 +219,27 @@ export function BoardPage() {
                 {colIssues.length === 0 ? (
                   <div className="flex items-center justify-center h-24 text-gray-600 text-xs">No issues</div>
                 ) : (
-                  colIssues.map((issue) => (
-                    <div
-                      key={issue.id}
-                      draggable
-                      onDragStart={() => handleDragStart(issue)}
-                      onClick={() => handleCardClick(issue)}
-                      className="bg-surface-2 rounded-md p-3 border border-surface-4 cursor-grab active:cursor-grabbing hover:border-misil-600/50 transition-all group"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-xs">{typeIcons[issue.issueType] ?? '📋'}</span>
-                          <GripVertical className="h-3 w-3 text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="space-y-3">
+                    {teamIds.map((teamId) => (
+                      <div key={teamId}>
+                        <div className="flex items-center gap-1.5 px-1 py-1 mb-1 sticky top-0 bg-surface-1 z-10">
+                          <Users className="h-3 w-3 text-purple-400 shrink-0" />
+                          <span className="text-[10px] font-semibold text-purple-400 uppercase tracking-wider">{teamMap[teamId] || 'Unknown'}</span>
+                          <Badge variant="outline" className="text-[10px] px-1 py-0">{teams[teamId].length}</Badge>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-[10px] font-medium ${priorityColors[issue.priority] ?? ''}`}>{issue.priority}</span>
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0">{issue.issueType}</Badge>
+                        {teams[teamId].map(renderIssueCard)}
+                      </div>
+                    ))}
+                    {unassigned.length > 0 && (
+                      <div>
+                        <div className="flex items-center gap-1.5 px-1 py-1 mb-1 sticky top-0 bg-surface-1 z-10">
+                          <span className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">Unassigned</span>
+                          <Badge variant="outline" className="text-[10px] px-1 py-0">{unassigned.length}</Badge>
                         </div>
+                        {unassigned.map(renderIssueCard)}
                       </div>
-                      <p className="text-sm text-white font-medium leading-snug">{issue.title}</p>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-[10px] text-gray-500">
-                          {issue.assigneeId ? `👤 ${memberMap[issue.assigneeId] || '...'}` : issue.assigneeTeamId ? <><Users className="h-3 w-3 inline" /> {teamMap[issue.assigneeTeamId] || '...'}</> : 'unassigned'}
-                        </span>
-                        {can('create_issues') && (
-                          <button
-                            onClick={(e) => handleDelete(issue, e)}
-                            className="p-1 rounded text-gray-600 hover:text-red-400 hover:bg-surface-3 opacity-0 group-hover:opacity-100 transition-all"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))
+                    )}
+                  </div>
                 )}
               </div>
             </div>

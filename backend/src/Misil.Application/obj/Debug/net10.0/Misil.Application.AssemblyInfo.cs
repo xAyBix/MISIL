@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Misil.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e02e7007da283e3a90f56995fb79cc81b04746cf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55f0a58b8e5389171886281367249a96fb0a037e")]
 [assembly: System.Reflection.AssemblyProductAttribute("Misil.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Misil.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

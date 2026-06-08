@@ -89,7 +89,41 @@ export function BacklogPage() {
     setIssues((prev) => [...prev, res.data])
   }
 
+  const renderIssueRow = (issue: IssueDto) => (
+    <div key={issue.id} onClick={() => setSelectedIssueId(issue.id)}
+      className="flex items-center gap-3 px-4 py-3 hover:bg-surface-2 transition-colors group cursor-pointer">
+      <span className="text-xs">{typeIcons[issue.issueType] ?? '📋'}</span>
+      <span className="text-sm text-white flex-1 truncate">{issue.title}</span>
+      <span className={`text-[10px] ${priorityColors[issue.priority] ?? ''}`}>{issue.priority}</span>
+      <span className="text-[10px] text-gray-500 flex items-center gap-1">
+        {issue.assigneeTeamId ? <><Users className="h-3 w-3" />{teamMap[issue.assigneeTeamId] || '...'}</>
+          : issue.assigneeId ? <><User className="h-3 w-3" />{memberMap[issue.assigneeId] || '...'}</>
+          : null}
+      </span>
+      <Badge variant="outline" className="text-xs">{issue.status}</Badge>
+      {can('create_issues') && (
+        <button
+          onClick={(e) => { e.stopPropagation(); handleDelete(issue) }}
+          className="p-1 rounded text-gray-600 hover:text-red-400 hover:bg-surface-3 opacity-0 group-hover:opacity-100 transition-all"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </div>
+  )
+
   const backlog = issues.filter((i) => i.status !== 'Done')
+  const backlogTeams: Record<string, IssueDto[]> = {}
+  const backlogUngrouped: IssueDto[] = []
+  for (const issue of backlog) {
+    if (issue.assigneeTeamId) {
+      if (!backlogTeams[issue.assigneeTeamId]) backlogTeams[issue.assigneeTeamId] = []
+      backlogTeams[issue.assigneeTeamId].push(issue)
+    } else {
+      backlogUngrouped.push(issue)
+    }
+  }
+  const backlogTeamIds = Object.keys(backlogTeams).sort()
 
   return (
     <div className="space-y-4">
@@ -105,28 +139,25 @@ export function BacklogPage() {
           </div>
         ) : (
           <div className="divide-y divide-surface-3">
-            {backlog.map((issue) => (
-              <div key={issue.id} onClick={() => setSelectedIssueId(issue.id)}
-                className="flex items-center gap-3 px-4 py-3 hover:bg-surface-2 transition-colors group cursor-pointer">
-                <span className="text-xs">{typeIcons[issue.issueType] ?? '📋'}</span>
-                <span className="text-sm text-white flex-1 truncate">{issue.title}</span>
-                <span className={`text-[10px] ${priorityColors[issue.priority] ?? ''}`}>{issue.priority}</span>
-                <span className="text-[10px] text-gray-500 flex items-center gap-1">
-                  {issue.assigneeId ? <><User className="h-3 w-3" />{memberMap[issue.assigneeId] || '...'}</>
-                    : issue.assigneeTeamId ? <><Users className="h-3 w-3" />{teamMap[issue.assigneeTeamId] || '...'}</>
-                    : null}
-                </span>
-                <Badge variant="outline" className="text-xs">{issue.status}</Badge>
-                {can('create_issues') && (
-                  <button
-                    onClick={(e) => { e.stopPropagation(); handleDelete(issue) }}
-                    className="p-1 rounded text-gray-600 hover:text-red-400 hover:bg-surface-3 opacity-0 group-hover:opacity-100 transition-all"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
-                )}
+            {backlogTeamIds.map((teamId) => (
+              <div key={teamId}>
+                <div className="flex items-center gap-2 px-4 py-2 bg-surface-2/50 sticky top-0">
+                  <Users className="h-3.5 w-3.5 text-purple-400 shrink-0" />
+                  <span className="text-xs font-semibold text-purple-400 uppercase tracking-wider">{teamMap[teamId] || 'Unknown'}</span>
+                  <Badge variant="outline" className="text-[10px] px-1 py-0">{backlogTeams[teamId].length}</Badge>
+                </div>
+                {backlogTeams[teamId].map(renderIssueRow)}
               </div>
             ))}
+            {backlogUngrouped.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 px-4 py-2 bg-surface-2/50 sticky top-0">
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Unassigned</span>
+                  <Badge variant="outline" className="text-[10px] px-1 py-0">{backlogUngrouped.length}</Badge>
+                </div>
+                {backlogUngrouped.map(renderIssueRow)}
+              </div>
+            )}
           </div>
         )}
       </div>
