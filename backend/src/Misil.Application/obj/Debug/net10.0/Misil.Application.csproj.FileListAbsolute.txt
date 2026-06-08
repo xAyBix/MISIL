@@ -1,0 +1,16 @@
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\bin\Debug\net10.0\Misil.Application.deps.json
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\bin\Debug\net10.0\Misil.Application.dll
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\bin\Debug\net10.0\Misil.Application.pdb
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\bin\Debug\net10.0\Misil.Domain.dll
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\bin\Debug\net10.0\Misil.Domain.pdb
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\Misil.Application.csproj.AssemblyReference.cache
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\Misil.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\Misil.Application.AssemblyInfoInputs.cache
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\Misil.Application.AssemblyInfo.cs
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\Misil.Application.csproj.CoreCompileInputs.cache
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\Misil.Application.sourcelink.json
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\Misil.Ap.6BD7FE4B.Up2Date
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\Misil.Application.dll
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\refint\Misil.Application.dll
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\Misil.Application.pdb
+C:\Users\HP\Desktop\MISIL\backend\src\Misil.Application\obj\Debug\net10.0\ref\Misil.Application.dll

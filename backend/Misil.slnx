@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Misil.Api/Misil.Api.csproj" />
+    <Project Path="src/Misil.Application/Misil.Application.csproj" />
+    <Project Path="src/Misil.Domain/Misil.Domain.csproj" />
+    <Project Path="src/Misil.Infrastructure/Misil.Infrastructure.csproj" />
+  </Folder>
+</Solution>
